@@ -1,0 +1,50 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using Umbraco.Cms.Core.Models;
+@{
+    var aboutCompanyImage = Model.Value<MediaWithCrops>("aboutCompanyImage");
+}
+
+<section class="container about-company">
+    <div class="about-company-design">
+        @{
+            if (aboutCompanyImage != null)
+            {
+                <img class="about-company-img" src="@aboutCompanyImage.MediaUrl()" alt="" height="500px">
+            }
+        }
+        <div class="about-company-img-info">
+            <div class="d-flex">
+                <h5 class="title-s">@Model.Value("aboutCompanyImageTitle") 
+                @{
+                    if (Model.Value("aboutCompanyImageTag") != "")
+                    {
+                        <h5 class="title-s me-2">,</h5>
+                    }
+                }
+                <span class="tag"> @Model.Value("aboutCompanyImageTag")</span></h5>
+            </div>
+            @{
+                if (Model.Value("aboutCompanyImageTeaser") != "")
+                {
+                    <p class="text-s">"@Model.Value("aboutCompanyImageTeaser")"</p>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="about-company-info">
+        <p class="tag">About Company</p>
+        <h5 class="title-m my-3 mt-md-1">@Model.Value("aboutCompanyTitle")</h5>
+        <p>@Model.Value("aboutCompanyTeaser")</p>
+        <nav class="d-flex justify-content-evenly justify-content-md-start mt-lg-5">
+            <button class="btn dark-btn">Learn More<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></button>
+            @{
+                if (Model.Value("aboutCompanyVideoLink") != "")
+                {
+                    <a href="@Model.Value("aboutCompanyVideoLink")" class="btn no-btn d-flex align-items-center"><i class="fa-duotone fa-play video-btn me-2"></i> Intro Video</a>
+                }
+            }
+            
+        </nav>
+    </div>
+</section>

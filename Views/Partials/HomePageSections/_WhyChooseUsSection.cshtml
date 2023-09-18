@@ -1,0 +1,53 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using Umbraco.Cms.Core.Models.Blocks;
+@using Umbraco.Cms.Core.Models;
+
+@*
+    @using Umbraco.Cms.Core.Models.PublishedContent;
+    @using Umbraco.Cms.Core.Models;
+    @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+*@
+
+@{
+    var whyChooseUsImage = Model.Value<MediaWithCrops>("whyChooseUsImage");
+}
+
+<section class="position-relative overflow-hidden">
+    <div class="choose-us container">
+        <div class="choose-us-info">
+            <p class="tag">Why Choose Us</p>
+            <h2 class="title-m mb-4">@Model.Value("whyChooseUsTitle")</h2>
+
+            <ul class="list-card-container">
+                @if (Model.HasValue("whyChooseUsCardSection"))
+                {
+                    var chooseUsCards = Model.Value<IEnumerable<BlockListItem>>("whyChooseUsCardSection");
+                    if (chooseUsCards is not null && chooseUsCards.Any())
+                    {                        
+                        foreach (var card in chooseUsCards)
+                        {
+                            <li class="list-card">    
+                                @{
+                                    var whyChooseUsCardIcon = card.Content.Value<MediaWithCrops>("chooseUsCardIcon");
+                                    
+                                    if (whyChooseUsCardIcon != null)
+                                    {
+                                        <img class="list-card-icon" src="@whyChooseUsCardIcon.MediaUrl()" height="60px">
+                                    }
+                                }
+                                <div class="list-card-text">
+                                    <h5 class="title-s">@card.Content.Value("chooseUsCardTitle")</h5>
+                                    <p class="text-s">@card.Content.Value("chooseUsCardTeaser")</p>
+                                </div>
+                            </li> 
+                        }
+                    }        
+                }
+            </ul>
+        </div>
+        <div class="choose-us-design">
+            <img class="choose-us-img" src="@whyChooseUsImage.MediaUrl()" width="500px">
+            <div class="choose-us-block"></div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,14 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+
+<section class="@(Model.Value<IEnumerable<IPublishedContent>>("brandImages") == null ? "d-none" : null) container collabs">
+    @{
+        var brandImages = Model.Value<IEnumerable<IPublishedContent>>("brandImages");
+        if (brandImages != null)
+        {
+            foreach (var item in brandImages)
+            {
+                <img class="collab-company" src="@item.Url()" style="width:200px" />
+            }
+        }
+    }
+</section>
