@@ -1,39 +1,30 @@
 ﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
 
+
+@{
+	var selection = Umbraco.Content(Guid.Parse("cf849894-f386-4d5c-99c0-9fd9d9ec1f0e"))
+    .ChildrenOfType("serviceItemPage")
+    .Where(x => x.IsVisible())
+    .OrderByDescending(x => x.CreateDate)
+    .Take(4);
+}
+
 <section class="services position-relative">
     <div class="container service-grid">
         <p class="tag service-grid-1">Our Services</p>
         <h1 class="title-m service-grid-2">@Model.Value("ourServicesTitle")</h1>
-        
-        <a href="#" class="service-info-cards hover-card-orange service-grid-3">
-            <i class="service-card-icon fa-light fa-horizontal-rule"></i>
-            <h5 class="service-card-title">Business Advice</h5>
-            <p class="service-card-info">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Officiis in nam possimus.</p>
-            <button class="round-btn dark-btn"><i class="fa-light fa-arrow-right"></i></button>
-        </a>
-        
-        <a href="#"  class="service-info-cards hover-card-orange service-grid-4">
-            <i class="service-card-icon fa-light fa-horizontal-rule"></i>
-            <h5 class="service-card-title">Startup Business</h5>
-            <p class="service-card-info">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Officiis in nam possimus.</p>
-            <button class="round-btn dark-btn"><i class="fa-light fa-arrow-right"></i></button>
-        </a>
 
-        <a href="#"  class="service-info-cards hover-card-orange service-grid-5">
-            <i class="service-card-icon fa-light fa-horizontal-rule"></i>
-            <h5 class="service-card-title">Financial Advice</h5>
-            <p class="service-card-info">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Officiis in nam possimus.</p>
-            <button class="round-btn dark-btn"><i class="fa-light fa-arrow-right"></i></button>
-        </a>
-
-        <a href="#"  class="service-info-cards hover-card-orange service-grid-6">
-            <i class="service-card-icon fa-light fa-horizontal-rule"></i>
-            <h5 class="service-card-title">Risk Management</h5>
-            <p class="service-card-info">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Officiis in nam possimus.</p>
-            <button class="round-btn dark-btn"><i class="fa-light fa-arrow-right"></i></button>
-        </a>
-        
-        <a href="/service/" class="btn light-btn service-grid-7">Browse Services <span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></a>    
+        @foreach(var item in selection)
+        {
+            <div class="service-info-cards hover-card-orange d-block">
+                <i class="service-card-icon fa-light fa-horizontal-rule"></i>
+                <h5 class="service-card-title">@item.Name</h5>
+                <p class="service-card-info">@item.Value("serviceTeaser")</p>
+                <a href="@item.Url()" class="d-flex justify-content-center align-items-center btn round-btn dark-btn"><i class="fa-light fa-arrow-right"></i></a>
+            </div>
+        }        
+        <a href="/service" class="btn light-btn service-grid-7">Browse Services <span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></a>
     </div>
     <img class="bg-decor-bottomright" src="~/images/Background-effects/ServicesSwirls.svg">
 </section>
+

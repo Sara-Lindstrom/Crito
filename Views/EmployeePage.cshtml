@@ -1,6 +1,8 @@
 ﻿@using Umbraco.Cms.Web.Common.PublishedModels;
-@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.ServicePage>
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.EmployeePage>
 @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.Models;
+
 @{
     Layout = "_LayoutWithBreadcrumb.cshtml";
 
@@ -10,13 +12,14 @@
     if (int.TryParse(Context.Request.Query["page"], out pageNumber) is false)
         pageNumber = 1;
         
-	var selection = Umbraco.Content(Guid.Parse("cf849894-f386-4d5c-99c0-9fd9d9ec1f0e"))
-    .ChildrenOfType("serviceItemPage")
+	var selection = Umbraco.Content(Guid.Parse("bd321ecf-5f6a-45d3-bed0-3be1763c630a"))
+    .ChildrenOfType("employeeInformationPage")
     .Where(x => x.IsVisible())
     .OrderByDescending(x => x.UpdateDate);
 
     var totalItems = selection?.Count() ?? 0;
     var pagedItems = selection?.Skip((pageNumber - 1) * itemsPerPage).Take(itemsPerPage);
+
 }
 
     <section class="container my-5">
@@ -27,13 +30,18 @@
             {
                 @foreach (var item in pagedItems)
             	{
-                    <div class="service-info-cards hover-card-orange d-block m-4">
-                        <i class="service-card-icon fa-light fa-horizontal-rule"></i>
-                        <h5 class="service-card-title">@item.Name</h5>
-                        <p class="service-card-info">@item.Value("serviceTeaser")</p>
-                        <a href="@item.Url()" class="d-flex justify-content-center align-items-center btn round-btn dark-btn"><i class="fa-light fa-arrow-right"></i></a>
-                    </div>
-                }
+            	    var image = item.Value<MediaWithCrops>("employeeImage");
+            	    
+    	            <a class="article-card">
+                        <div class="article-card-decor">
+                            <img class="article-card-img" src="@image.MediaUrl()" width="420px">
+                        </div>
+                        <div class="article-card-info">
+                            <h5 class="title-s ">@item.Name</h5>
+                            <p class="text-teaser  mx-auto">@item.Value("employeeTitle")</p>
+                        </div>
+                    </a>
+            	}
             }
         </div>
 
@@ -66,5 +74,3 @@
             </ul>
           </nav>
     </section>
-
-@await Html.PartialAsync("_GetNewsForm")

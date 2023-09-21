@@ -1,4 +1,29 @@
-﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+﻿@using Umbraco.Cms.Core.Models;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+
+@{
+    var itemsPerPage = 3;
+    var itemsPerPageSmall = 6;
+
+    var pageNumber = 1;
+    var pageMuberSmall = 1;
+
+    if (int.TryParse(Context.Request.Query["page"], out pageNumber) is false)
+        pageNumber = 1;
+
+    if (int.TryParse(Context.Request.Query["page"], out pageMuberSmall) is false)
+        pageMuberSmall = 1;
+
+    var selection = Umbraco.Content(Guid.Parse("93a216bf-89bc-4b3b-939b-a16ee6c8a594"))
+        .ChildrenOfType("articleItemPage")
+        .Where(x => x.IsVisible())
+        .OrderByDescending(x => x.CreateDate);
+
+    var totalItems = selection?.Count() ?? 0;
+
+    var pagedItems = selection?.Skip((pageNumber - 1) * itemsPerPage).Take(itemsPerPage);
+    var pagedItemsSmall = selection?.Skip((pageNumber - 1) * itemsPerPageSmall).Take(itemsPerPageSmall);
+}
 
 <div class="my-carousel-container container">
     <div class="carousel-title">
@@ -6,321 +31,95 @@
            <p class="tag">Article & News</p>
             <h5 class="title-m">Get Every Single Articles & News</h5>
         </div>
-        <a href="/newsArticles.html" class="btn white-btn  ms-md-2">Browse Articles<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></a>
+        <a href="/news" class="btn white-btn  ms-md-2">Browse Articles<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></a>
     </div>
 
     <div class="display-sm">
-        @*<a class="article-card" href="/blogarticle.html">
-            <div class="article-card-decor">
-                <div class="article-card-date">
-                    <p class="m-0">25</p>
-                    <p class="m-0">Mar</p>
-                </div>
+        @if(pagedItemsSmall != null)
+        {
+            @foreach (var item in pagedItemsSmall)
+        	{
+        	    var image = item.Value<MediaWithCrops>("articleImage");
+        	    
+	            <a class="article-card" href="@item.Url()">
+                    <div class="article-card-decor">
+                        <div class="article-card-date">
+                            <p class="m-0">@item.CreateDate.ToString("dd")</p>
+                            <p class="m-0">@item.CreateDate.ToString("MMM")</p>
+                        </div>
 
-                <img class="article-card-img" src="./assets/img/DigitalizationClassroom.svg" width="420px">
-            </div>
-            <div class="article-card-info">
-                <p class="text-s">Business</p>
-                <h5 class="title-s">How To Use Digitalization In The Classroom</h5>
-                <p class="text-teaser mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-            </div>
-        </a>
-        <a class="article-card" href="/blogarticle.html">
-            <div class="article-card-decor">
-                <div class="article-card-date">
-                    <p class="m-0">17</p>
-                    <p class="m-0">Mar</p>
-                </div>
-
-                <img class="article-card-img" src="./assets/img/chatGpt.svg" width="420px">
-            </div>
-            <div class="article-card-info">
-                <p class="text-s">Business</p>
-                <h5 class="title-s">How To Implement Chat GPT In Your Projects</h5>
-                <p class="text-teaser mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-            </div>
-        </a>
-        <a class="article-card" href="/blogarticle.html">
-            <div class="article-card-decor">
-                <div class="article-card-date">
-                    <p class="m-0">13</p>
-                    <p class="m-0">Mar</p>
-                </div>
-
-                <img class="article-card-img" src="./assets/img/modernCss.svg" width="420px">
-            </div>
-            <div class="article-card-info">
-                <p class="text-s">Business</p>
-                <h5 class="title-s">The Guide To Support Modern CSS Design</h5>
-                <p class="text-teaser mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-            </div>
-        </a>*@
+                        <img class="article-card-img" src="@image.MediaUrl()" width="420px">
+                    </div>
+                    <div class="article-card-info">
+                        <p class="text-s ">@item.Value("articleCategories")</p>
+                        <h5 class="title-s ">@item.Name</h5>
+                        <p class="text-teaser  mx-auto">@item.Value("articleTeaser")</p>
+                    </div>
+                </a>
+        	}
+        }
     </div>
 
     <div class="display-md">
         <div id="carouselExampleIndicators" class="carousel slide">
             <div class="carousel-indicators">
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active slider-indicator" aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2" class="slider-indicator"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3" class="slider-indicator"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3" aria-label="Slide 4" class="slider-indicator"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="4" aria-label="Slide 5" class="slider-indicator"></button>
+                @if (Math.Ceiling((decimal)totalItems / itemsPerPage) > 1)
+                {
+                    @for (int i = 1; i <= Math.Ceiling((decimal)totalItems / itemsPerPage); i++)
+                    {
+                        if (i == pageNumber)
+                        {
+                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@(i - 1)" class="active slider-indicator" aria-current="true" aria-label="Slide @(i-1)"></button>
+                        }
+                        else
+                        {
+                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@(i - 1)" aria-label="Slide @(i-1)" class="slider-indicator"></button>
+
+                        }
+                    }
+                }
             </div>
             <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div class="d-flex justify-content-center">
-                       @* <a class="article-card" href="/blogarticle.html">
-                            <div class="article-card-decor">
-                                <div class="article-card-date">
-                                    <p class="m-0">25</p>
-                                    <p class="m-0">Mar</p>
-                                </div>
-            
-                                <img class="article-card-img" src="./assets/img/DigitalizationClassroom.svg" width="420px">
-                            </div>
-                            <div class="article-card-info">
-                                <p class="text-s ">Business</p>
-                                <h5 class="title-s">How To Use Digitalization In The Classroom</h5>
-                                <p class="text-teaser  mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-                            </div>
-                        </a>
-                        <a class="article-card" href="/blogarticle.html">
-                            <div class="article-card-decor">
-                                <div class="article-card-date">
-                                    <p class="m-0">17</p>
-                                    <p class="m-0">Mar</p>
-                                </div>
-            
-                                <img class="article-card-img" src="./assets/img/chatGpt.svg" width="420px">
-                            </div>
-                            <div class="article-card-info">
-                                <p class="text-s ">Business</p>
-                                <h5 class="title-s ">How To Implement Chat GPT In Your Projects</h5>
-                                <p class="text-teaser  mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-                            </div>
-                        </a>
-                        <a class="article-card" href="/blogarticle.html">
-                            <div class="article-card-decor">
-                                <div class="article-card-date">
-                                    <p class="m-0">13</p>
-                                    <p class="m-0">Mar</p>
-                                </div>
-            
-                                <img class="article-card-img" src="./assets/img/modernCss.svg" width="420px">
-                            </div>
-                            <div class="article-card-info">
-                                <p class="text-s ">Business</p>
-                                <h5 class="title-s ">The Guide To Support Modern CSS Design</h5>
-                                <p class="text-teaser  mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-                            </div>
-                        </a>*@
+                @for (int i = 1; i <= Math.Ceiling((decimal)totalItems / itemsPerPage); i++)
+                {
+                    <div class="carousel-item @(i == 1 ? "active" : "")">
+                        <div class="d-flex justify-content-center">
+                            @foreach (var item in selection?.Skip((i - 1) * itemsPerPage).Take(itemsPerPage))
+                            {
+                                var image = item.Value<MediaWithCrops>("articleImage");
+
+                                <a class="article-card" href="@item.Url()">
+                                    <div class="article-card-decor">
+                                        <div class="article-card-date">
+                                            <p class="m-0">@item.CreateDate.ToString("dd")</p>
+                                            <p class="m-0">@item.CreateDate.ToString("MMM")</p>
+                                        </div>
+
+                                        <img class="article-card-img" src="@image.MediaUrl()" width="420px">
+                                    </div>
+                                    <div class="article-card-info">
+                                        <p class="text-s ">@item.Value("articleCategories")</p>
+                                        <h5 class="title-s ">@item.Name</h5>
+                                        <p class="text-teaser  mx-auto">@item.Value("articleTeaser")</p>
+                                    </div>
+                                </a>
+
+                            }
+                        </div>
                     </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="d-flex justify-content-center">
-                        @*<a class="article-card" href="/blogarticle.html">
-                            <div class="article-card-decor">
-                                <div class="article-card-date">
-                                    <p class="m-0">25</p>
-                                    <p class="m-0">Mar</p>
-                                </div>
-            
-                                <img class="article-card-img" src="./assets/img/DigitalizationClassroom.svg" width="420px">
-                            </div>
-                            <div class="article-card-info">
-                                <p class="text-s ">Business</p>
-                                <h5 class="title-s ">How To Use Digitalization In The Classroom</h5>
-                                <p class="text-teaser  mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-                            </div>
-                        </a>
-                        <a class="article-card" href="/blogarticle.html">
-                            <div class="article-card-decor">
-                                <div class="article-card-date">
-                                    <p class="m-0">17</p>
-                                    <p class="m-0">Mar</p>
-                                </div>
-            
-                                <img class="article-card-img" src="./assets/img/chatGpt.svg" width="420px">
-                            </div>
-                            <div class="article-card-info">
-                                <p class="text-s ">Business</p>
-                                <h5 class="title-s ">How To Implement Chat GPT In Your Projects</h5>
-                                <p class="text-teaser  mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-                            </div>
-                        </a>
-                        <a class="article-card" href="/blogarticle.html">
-                            <div class="article-card-decor">
-                                <div class="article-card-date">
-                                    <p class="m-0">13</p>
-                                    <p class="m-0">Mar</p>
-                                </div>
-            
-                                <img class="article-card-img" src="./assets/img/modernCss.svg" width="420px">
-                            </div>
-                            <div class="article-card-info">
-                                <p class="text-s ">Business</p>
-                                <h5 class="title-s ">The Guide To Support Modern CSS Design</h5>
-                                <p class="text-teaser  mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-                            </div>
-                        </a>*@
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="d-flex justify-content-center">
-                       @* <a class="article-card" href="/blogarticle.html">
-                            <div class="article-card-decor">
-                                <div class="article-card-date">
-                                    <p class="m-0">25</p>
-                                    <p class="m-0">Mar</p>
-                                </div>
-            
-                                <img class="article-card-img" src="./assets/img/DigitalizationClassroom.svg" width="420px">
-                            </div>
-                            <div class="article-card-info">
-                                <p class="text-s ">Business</p>
-                                <h5 class="title-s ">How To Use Digitalization In The Classroom</h5>
-                                <p class="text-teaser  mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-                            </div>
-                        </a>
-                        <a class="article-card" href="/blogarticle.html">
-                            <div class="article-card-decor">
-                                <div class="article-card-date">
-                                    <p class="m-0">17</p>
-                                    <p class="m-0">Mar</p>
-                                </div>
-            
-                                <img class="article-card-img" src="./assets/img/chatGpt.svg" width="420px">
-                            </div>
-                            <div class="article-card-info">
-                                <p class="text-s ">Business</p>
-                                <h5 class="title-s ">How To Implement Chat GPT In Your Projects</h5>
-                                <p class="text-teaser  mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-                            </div>
-                        </a>
-                        <a class="article-card" href="/blogarticle.html">
-                            <div class="article-card-decor">
-                                <div class="article-card-date">
-                                    <p class="m-0">13</p>
-                                    <p class="m-0">Mar</p>
-                                </div>
-            
-                                <img class="article-card-img" src="./assets/img/modernCss.svg" width="420px">
-                            </div>
-                            <div class="article-card-info">
-                                <p class="text-s ">Business</p>
-                                <h5 class="title-s ">The Guide To Support Modern CSS Design</h5>
-                                <p class="text-teaser  mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-                            </div>
-                        </a>*@
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="d-flex justify-content-center">
-                       @* <a class="article-card" href="/blogarticle.html">
-                            <div class="article-card-decor">
-                                <div class="article-card-date">
-                                    <p class="m-0">25</p>
-                                    <p class="m-0">Mar</p>
-                                </div>
-            
-                                <img class="article-card-img" src="./assets/img/DigitalizationClassroom.svg" width="420px">
-                            </div>
-                            <div class="article-card-info">
-                                <p class="text-s ">Business</p>
-                                <h5 class="title-s ">How To Use Digitalization In The Classroom</h5>
-                                <p class="text-teaser  mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-                            </div>
-                        </a>
-                        <a class="article-card" href="/blogarticle.html">
-                            <div class="article-card-decor">
-                                <div class="article-card-date">
-                                    <p class="m-0">17</p>
-                                    <p class="m-0">Mar</p>
-                                </div>
-            
-                                <img class="article-card-img" src="./assets/img/chatGpt.svg" width="420px">
-                            </div>
-                            <div class="article-card-info">
-                                <p class="text-s ">Business</p>
-                                <h5 class="title-s ">How To Implement Chat GPT In Your Projects</h5>
-                                <p class="text-teaser  mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-                            </div>
-                        </a>
-                        <a class="article-card" href="/blogarticle.html">
-                            <div class="article-card-decor">
-                                <div class="article-card-date">
-                                    <p class="m-0">13</p>
-                                    <p class="m-0">Mar</p>
-                                </div>
-            
-                                <img class="article-card-img" src="./assets/img/modernCss.svg" width="420px">
-                            </div>
-                            <div class="article-card-info">
-                                <p class="text-s ">Business</p>
-                                <h5 class="title-s ">The Guide To Support Modern CSS Design</h5>
-                                <p class="text-teaser  mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-                            </div>
-                        </a>*@
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="d-flex justify-content-center">
-                        @*<a class="article-card" href="/blogarticle.html">
-                            <div class="article-card-decor">
-                                <div class="article-card-date">
-                                    <p class="m-0">25</p>
-                                    <p class="m-0">Mar</p>
-                                </div>
-            
-                                <img class="article-card-img" src="./assets/img/DigitalizationClassroom.svg" width="420px">
-                            </div>
-                            <div class="article-card-info">
-                                <p class="text-s ">Business</p>
-                                <h5 class="title-s ">How To Use Digitalization In The Classroom</h5>
-                                <p class="text-teaser  mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-                            </div>
-                        </a>
-                        <a class="article-card" href="/blogarticle.html">
-                            <div class="article-card-decor">
-                                <div class="article-card-date">
-                                    <p class="m-0">17</p>
-                                    <p class="m-0">Mar</p>
-                                </div>
-            
-                                <img class="article-card-img" src="./assets/img/chatGpt.svg" width="420px">
-                            </div>
-                            <div class="article-card-info">
-                                <p class="text-s ">Business</p>
-                                <h5 class="title-s ">How To Implement Chat GPT In Your Projects</h5>
-                                <p class="text-teaser  mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-                            </div>
-                        </a>
-                        <a class="article-card" href="/blogarticle.html">
-                            <div class="article-card-decor">
-                                <div class="article-card-date">
-                                    <p class="m-0">13</p>
-                                    <p class="m-0">Mar</p>
-                                </div>
-            
-                                <img class="article-card-img" src="./assets/img/modernCss.svg" width="420px">
-                            </div>
-                            <div class="article-card-info">
-                                <p class="text-s ">Business</p>
-                                <h5 class="title-s ">The Guide To Support Modern CSS Design</h5>
-                                <p class="text-teaser  mx-auto">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto sed hic libero.</p>
-                            </div>
-                        </a>*@
-                    </div>
-                </div>
+                }               
             </div>
-            <button class="carousel-control-prev carousel-control-arrow-left" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next carousel-control-arrow-right" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
+            @if (Math.Ceiling((decimal)totalItems / itemsPerPage) > 1)
+            {
+                <button class="carousel-control-prev carousel-control-arrow-left" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next carousel-control-arrow-right" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            }
         </div>
     </div>
 </div>

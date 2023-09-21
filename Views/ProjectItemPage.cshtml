@@ -1,5 +1,5 @@
 ﻿@using Umbraco.Cms.Web.Common.PublishedModels;
-@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.ArticleItemPage>
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.ProjectItemPage>
 @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
 @using Umbraco.Cms.Core.Services;
 @inject IUserService UserService;
@@ -8,7 +8,7 @@
 @{
     Layout = "_LayoutWithBreadcrumb.cshtml";
     var userService = UserService;
-    var imageUrl = Model.Value<MediaWithCrops>("articleImage");
+    var imageUrl = Model.Value<MediaWithCrops>("projectImage");
 }
 
 <!-- blog -->
@@ -18,7 +18,7 @@
         <h2 class="title-xl">@Model.Name</h2>
         <div class="full-article-details">
             <p class="text-s full-article-details-p">@Model.CreateDate.ToString("MMM dd, yyyy")</p>
-            <p class="text-s full-article-details-p">@Model.Value("articleCategories")</p>
+            <p class="text-s full-article-details-p">Project</p>
             <p class="text-s full-article-details-p">@Model.CreatorName(userService)</p>
         </div>
 
@@ -27,20 +27,20 @@
         </div>
 
         <p class="full-article-text">
-            @Model.Value("articleContent")
+            @Model.Value("projectContent")
         </p>
 
         <div class="d-flex justify-content-between">
-            @foreach (var tag in Model.Value<IEnumerable<string>>("articleTags"))
+            @foreach (var tag in Model.Value<IEnumerable<string>>("projectTags"))
             {
                 <p class="full-article-tag">@tag</p>
             }
         </div>
 
     </div>
-@await Html.PartialAsync("_ArticleNavigation")
+    @await Html.PartialAsync("_ArticleNavigation")
 
-</section>   
+</section>
 
 <!-- articles & news -->
 <div class="bg-beige">

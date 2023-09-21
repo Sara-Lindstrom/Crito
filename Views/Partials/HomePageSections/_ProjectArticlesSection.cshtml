@@ -1,4 +1,15 @@
-﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+﻿@using Umbraco.Cms.Core.Models;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+
+
+@{
+	var selection = Umbraco.Content(Guid.Parse("93a216bf-89bc-4b3b-939b-a16ee6c8a594"))
+    .ChildrenOfType("projectItemPage")
+    .Where(x => x.IsVisible())
+    .OrderByDescending(x => x.CreateDate)
+    .Take(4);
+}
+
 
 <section class="projects container">
     <div class="projects-title">
@@ -7,47 +18,24 @@
     </div>
     
     
-    @*<div class="project-card-container">
-        <a href="#" class="project-card">
-            <img class="project-card-img" src="./assets/img/GrowBusiness.svg" alt="" width="600px">
-            <h5 class="title-s project-card-title">Grow your Business</h5>
-            <hr class="project-card-line">
+    <div class="project-card-container">
+        @foreach(var item in selection){
+            var image = item.Value<MediaWithCrops>("projectImage");
 
-            <div class="project-card-btn">
-                <button class="no-btn btn">Learn More<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></button>
-            </div>
-        </a>
-        <a href="#" class="project-card">
-            <img class="project-card-img" src="./assets/img/ResponsiveWebsite.svg" alt="" width="600px">
-            <h5 class="title-s project-card-title">Why your client needs a responsive website</h5>
-            <hr class="project-card-line">
+            <div href="@item.Url()" class="project-card">
+                <img class="project-card-img" src="@image.MediaUrl()" alt="" width="600px">
+                <h5 class="title-s project-card-title">@item.Name</h5>
+                <hr class="project-card-line">
 
-            <div class="project-card-btn">
-                <button class="no-btn btn">Learn More<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></button>
+                <div class="project-card-btn">
+                    <a href="@item.Url()" class="no-btn btn">Learn More<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></a>
+                </div>
             </div>
-        </a>
-        <a href="#" class="project-card">
-            <img class="project-card-img" src="./assets/img/EducateEmployees.svg" alt="" width="600px">
-            <h5 class="title-s project-card-title">Educate your employees to get better results</h5>
-            <hr class="project-card-line">
-
-            <div class="project-card-btn">
-                <button class="no-btn btn">Learn More<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></button>
-            </div>
-        </a>
-        <a href="#" class="project-card">
-            <img class="project-card-img" src="./assets/img/BusinessInsights.svg" alt="" width="600px">
-            <h5 class="title-s project-card-title">Business Insights is a important piece of your business</h5>
-            <hr class="project-card-line">
-
-            <div class="project-card-btn">
-                <button class="no-btn btn">Learn More<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></button>
-            </div>
-        </a>
-    </div>*@
+        }
+    </div>
     
     
     <div class="project-btn">
-        <a href="" class="btn dark-btn">All Recent Projects<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></a>
+        <a href="/news" class="btn dark-btn">All Recent Projects<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></a>
     </div>
 </section>

@@ -13,11 +13,10 @@
 @await Html.PartialAsync("HomePageSections/_OurServicesSection")
 @await Html.PartialAsync("HomePageSections/_WhyChooseUsSection")
 @await Html.PartialAsync("HomePageSections/_ProjectArticlesSection")
-@await Html.PartialAsync("HomePageSections/_OurTeam")
-@await Html.PartialAsync("HomePageSections/_TestimonialSection")
+<div class="bg-orange">
+    @await Html.PartialAsync("HomePageSections/_OurTeam")
+    @await Html.PartialAsync("HomePageSections/_TestimonialSection")   
+</div>
 
 @await Html.PartialAsync("_ArticleCarousel")
-
-<div class="bg-beige">
-    @await Html.PartialAsync("_GetNewsForm")
-</div>
+@await Html.PartialAsync("_GetNewsForm")

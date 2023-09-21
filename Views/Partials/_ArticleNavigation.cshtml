@@ -1,0 +1,123 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage;
+@using Umbraco.Cms.Core.PropertyEditors;
+@using Umbraco.Cms.Core.Services;
+
+@{
+    //Help from class friend Ninja for getting article categories and amount
+
+    var parentId = Guid.Parse("93a216bf-89bc-4b3b-939b-a16ee6c8a594");
+    var parent = Umbraco.Content(parentId);
+    List<IPublishedContent>? itemSelection = null;
+    List<IPublishedContent>? projectSelection = null;
+    Dictionary<string, int>? categoryCount = null;
+
+    if(parent != null)
+    {
+        var articlechildren = parent.ChildrenOfType("articleItemPage");
+        var projectchildren = parent.ChildrenOfType("projectItemPage");
+
+        if (articlechildren != null)
+        {
+            itemSelection = articlechildren
+                .Where(x => x.IsVisible())
+                .OrderByDescending(x => x.CreateDate)
+                .ToList();
+        }
+
+        if (projectchildren != null)
+        {
+            projectSelection = projectchildren
+                .Where(x => x.IsVisible())
+                .OrderByDescending(x => x.CreateDate)
+                .ToList();
+
+            foreach(var project in projectSelection)
+            {
+                itemSelection.Add(project);
+            }
+        }
+
+        categoryCount = new Dictionary<string, int>();
+
+        if (itemSelection != null)
+        {
+            foreach (var item in itemSelection)
+            {
+                string? category = item.Value<string>("articleCategories");
+
+                if (!string.IsNullOrEmpty(category))
+                {
+                    if (categoryCount.ContainsKey(category))
+                    {
+                        categoryCount[category]++;
+                    }
+                    else
+                    {
+                        categoryCount[category] = 1;
+                    }
+                    Console.WriteLine("article");
+                }
+                else if (item.ContentType.Alias == "projectItemPage")
+                {
+                    string? projectcategory = "Project";
+
+                    if (categoryCount.ContainsKey(projectcategory))
+                    {
+                        categoryCount[projectcategory]++;
+                    }
+                    else
+                    {
+                        categoryCount[projectcategory] = 1;
+                    }
+                    Console.WriteLine("project");
+                }
+            }
+        }
+    }    
+}
+
+    <!-- article nav -->
+    <nav class="article-nav">
+        <!-- Search -->
+        <div class="search-container">
+            <i class="fa-regular fa-magnifying-glass py-2 ps-4 pe-2"></i>
+            <input type="text" class="search-input" placeholder="Type to Search">
+        </div>
+
+        <!-- Recent Posts -->
+        <div class="frame">
+            <h6 class="title-m title-line mb-4">Recent Posts</h6>
+
+            <ul class="ul-no-decor">
+                @{
+                	var selection = Umbraco.Content(Guid.Parse("93a216bf-89bc-4b3b-939b-a16ee6c8a594"))
+                        .ChildrenOfType("articleItemPage")
+                        .Where(x => x.IsVisible())
+                        .OrderByDescending(x => x.CreateDate)
+                        .Take(4);
+                }
+                        
+            	@foreach (var item in selection)
+            	{
+	                <li>                
+                        <a class="small-article-card" href="@item.Url()">
+                        <h6 class="title-s small-article-title">@item.Name</h6>
+                        <p class="text-s small-article-text">@item.CreateDate.ToString("MMM dd, yyyy")</p>
+                        </a>
+                    </li>
+            	}
+            </ul>
+        </div>
+
+        <!-- Categories -->
+        <div class="frame">
+            <h6 class="title-m title-line">Categories</h6>
+
+            <ul class="ul-no-decor categories-ul">
+                @foreach (var item in categoryCount)
+                {
+                    <li><a href="#" class="categories-name">@item.Key <span class="categories-info"> - @item.Value Posts</span></a></li>
+                }
+            </ul>
+        </div>
+    </nav>

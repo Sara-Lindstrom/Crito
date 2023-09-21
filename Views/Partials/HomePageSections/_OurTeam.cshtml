@@ -1,155 +1,87 @@
-﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+﻿@using Umbraco.Cms.Core.Models;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
 
 
-<div class="bg-orange">
-    <div class="my-carousel-container container">
+@{
+    var itemsPerPage = 4;
+    var pageNumber = 1;
+
+    if (int.TryParse(Context.Request.Query["page"], out pageNumber) is false)
+        pageNumber = 1;
+        
+	var selection = Umbraco.Content(Guid.Parse("bd321ecf-5f6a-45d3-bed0-3be1763c630a"))
+    .ChildrenOfType("employeeInformationPage")
+    .Where(x => x.IsVisible())
+    .OrderByDescending(x => x.UpdateDate);
+    
+    var totalItems = selection?.Count() ?? 0;
+
+    var pagedItems = selection?.Skip((pageNumber - 1) * itemsPerPage).Take(itemsPerPage);
+}
+
+
+<div class="my-carousel-container container">
         <div class="carousel-title">
              <div>
                <p class="tag">Meet Our Team</p>
                 <h5 class="title-m">Experience Team Members</h5>
             </div>
-            <button class="btn orange-btn  ms-md-2">Browse Team<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></button>
+            <a href="/contact/employee" class="btn orange-btn  ms-md-2">Browse Team<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></a>
         </div>
 
         <div class="d-none d-md-block">
             <div id="carouselarticleIndicators" class="carousel slide" data-bs-ride="true">
                 <div class="carousel-indicators">
-                    <button type="button" data-bs-target="#carouselarticleIndicators" data-bs-slide-to="0" class="active slider-indicator" aria-current="true" aria-label="Slide 1"></button>
-                    <button type="button" data-bs-target="#carouselarticleIndicators" data-bs-slide-to="1" aria-label="Slide 2" class="slider-indicator"></button>
-                    <button type="button" data-bs-target="#carouselarticleIndicators" data-bs-slide-to="2" aria-label="Slide 3" class="slider-indicator"></button>
-                    <button type="button" data-bs-target="#carouselarticleIndicators" data-bs-slide-to="3" aria-label="Slide 4" class="slider-indicator"></button>
-                    <button type="button" data-bs-target="#carouselarticleIndicators" data-bs-slide-to="4" aria-label="Slide 5" class="slider-indicator"></button>
+                @if (Math.Ceiling((decimal)totalItems / itemsPerPage) > 1)
+                {
+                    for (int i = 1; i <= Math.Ceiling((decimal)totalItems / itemsPerPage); i++)
+                    {
+                        if (i == pageNumber)
+                        {
+                            <button type="button" data-bs-target="#carouselarticleIndicators" data-bs-slide-to="@(i - 1)" class="active slider-indicator" aria-current="true" aria-label="Slide @(i-1)"></button>
+                        }
+                        else
+                        {
+                            <button type="button" data-bs-target="#carouselarticleIndicators" data-bs-slide-to="@(i - 1)" aria-label="Slide @(i-1)" class="slider-indicator"></button>
+
+                        }
+                    }
+                }
+
                 </div>
                 <div class="carousel-inner">
-                    <div class="carousel-item active">
+                @for (int i = 1; i <= Math.Ceiling((decimal)totalItems / itemsPerPage); i++)
+                {
+
+                    <div class="carousel-item @(i == 1 ? "active" : "")">
                         <div class="d-flex justify-content-center">
-@*                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/KristineP.svg" alt="" height="400px">
-                                <h5 class="title-s ">Kristine Palmer</h5>
-                                <p class="text-s ">Chef Operator Officer</p>
-                            </div>
-                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/MarkA.svg" alt="" height="400px">
-                                <h5 class="title-s ">Mark Aubri</h5>
-                                <p class="text-s ">Senior Consultant</p>
-                            </div>
-                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/KimberlyH.svg" alt="" height="400px">
-                                <h5 class="title-s ">Kimberly Hansen</h5>
-                                <p class="text-s ">Senior Consultant</p>
-                            </div>
-                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/JustinW.svg" alt="" height="400px">
-                                <h5 class="title-s ">Justin Willowman</h5>
-                                <p class="text-s ">Senior Tech Consultant</p>
-                            </div>*@
+                            @foreach (var item in selection?.Skip((i - 1) * itemsPerPage).Take(itemsPerPage))
+                            {
+                                var image = item.Value<MediaWithCrops>("employeeImage");
+
+                                <div class="employee-card">
+                                    <img class="employee-card-img" src="@image.MediaUrl()" alt="" height="400px">
+                                    <h5 class="title-s ">@item.Name</h5>
+                                    <p class="text-s ">@item.Value("employeeTitle")</p>
+                                </div>
+                            }
                         </div>
                     </div>
-                    <div class="carousel-item">
-                        <div class="d-flex justify-content-center">
-  @*                          <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/KristineP.svg" alt="" height="400px">
-                                <h5 class="title-s ">Kristine Palmer</h5>
-                                <p class="text-s ">Chef Operator Officer</p>
-                            </div>
-                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/MarkA.svg" alt="" height="400px">
-                                <h5 class="title-s ">Mark Aubri</h5>
-                                <p class="text-s ">Senior Consultant</p>
-                            </div>
-                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/KimberlyH.svg" alt="" height="400px">
-                                <h5 class="title-s ">Kimberly Hansen</h5>
-                                <p class="text-s ">Senior Consultant</p>
-                            </div>
-                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/JustinW.svg" alt="" height="400px">
-                                <h5 class="title-s ">Justin Willowman</h5>
-                                <p class="text-s ">Senior Tech Consultant</p>
-                            </div>*@
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="d-flex justify-content-center">
- @*                           <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/KristineP.svg" alt="" height="400px">
-                                <h5 class="title-s ">Kristine Palmer</h5>
-                                <p class="text-s ">Chef Operator Officer</p>
-                            </div>
-                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/MarkA.svg" alt="" height="400px">
-                                <h5 class="title-s ">Mark Aubri</h5>
-                                <p class="text-s ">Senior Consultant</p>
-                            </div>
-                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/KimberlyH.svg" alt="" height="400px">
-                                <h5 class="title-s ">Kimberly Hansen</h5>
-                                <p class="text-s ">Senior Consultant</p>
-                            </div>
-                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/JustinW.svg" alt="" height="400px">
-                                <h5 class="title-s ">Justin Willowman</h5>
-                                <p class="text-s ">Senior Tech Consultant</p>
-                            </div>*@
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="d-flex justify-content-center">
-@*                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/KristineP.svg" alt="" height="400px">
-                                <h5 class="title-s ">Kristine Palmer</h5>
-                                <p class="text-s ">Chef Operator Officer</p>
-                            </div>
-                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/MarkA.svg" alt="" height="400px">
-                                <h5 class="title-s ">Mark Aubri</h5>
-                                <p class="text-s ">Senior Consultant</p>
-                            </div>
-                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/KimberlyH.svg" alt="" height="400px">
-                                <h5 class="title-s ">Kimberly Hansen</h5>
-                                <p class="text-s ">Senior Consultant</p>
-                            </div>
-                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/JustinW.svg" alt="" height="400px">
-                                <h5 class="title-s ">Justin Willowman</h5>
-                                <p class="text-s ">Senior Tech Consultant</p>
-                            </div>*@
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="d-flex justify-content-center">
- @*                           <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/KristineP.svg" alt="" height="400px">
-                                <h5 class="title-s ">Kristine Palmer</h5>
-                                <p class="text-s ">Chef Operator Officer</p>
-                            </div>
-                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/MarkA.svg" alt="" height="400px">
-                                <h5 class="title-s ">Mark Aubri</h5>
-                                <p class="text-s ">Senior Consultant</p>
-                            </div>
-                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/KimberlyH.svg" alt="" height="400px">
-                                <h5 class="title-s ">Kimberly Hansen</h5>
-                                <p class="text-s ">Senior Consultant</p>
-                            </div>
-                            <div class="employee-card">
-                                <img class="employee-card-img" src="./assets/img/JustinW.svg" alt="" height="400px">
-                                <h5 class="title-s ">Justin Willowman</h5>
-                                <p class="text-s ">Senior Tech Consultant</p>
-                            </div>
-                        </div>*@
-                    </div>
-                </div>
-                <button class="carousel-control-prev carousel-control-arrow-left" type="button" data-bs-target="#carouselarticleIndicators" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next carousel-control-arrow-right" type="button" data-bs-target="#carouselarticleIndicators" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
+                }
+
+                @if (Math.Ceiling((decimal)totalItems / itemsPerPage)>1)
+                {
+                    <button class="carousel-control-prev carousel-control-arrow-left" type="button" data-bs-target="#carouselarticleIndicators" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next carousel-control-arrow-right" type="button" data-bs-target="#carouselarticleIndicators" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                
+                }
+
             </div>
         </div>
     </div>

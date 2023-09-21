@@ -1,0 +1,109 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.ArticlesPage>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.Models;
+
+@{
+    Layout = "_LayoutWithBreadcrumb.cshtml";
+
+    var itemsPerPage = 9;
+    var pageNumber = 1;
+
+    if (int.TryParse(Context.Request.Query["page"], out pageNumber) is false)
+        pageNumber = 1;
+        
+	var selection = Umbraco.Content(Guid.Parse("93a216bf-89bc-4b3b-939b-a16ee6c8a594"))
+    .Children()
+    .Where(x => x.IsVisible())
+    .OrderByDescending(x => x.CreateDate);
+
+    var totalItems = selection?.Count() ?? 0;
+    var pagedItems = selection?.Skip((pageNumber - 1) * itemsPerPage).Take(itemsPerPage);
+}
+
+    <section class="container my-5">
+        <h2 class="title-m text-center text-md-start">Our News & Articles</h2>
+        <div class="articles-container">
+            
+            @if(pagedItems != null)
+            {
+                @foreach (var item in pagedItems)
+            	{
+                if (item.ContentType.Alias == "articleItemPage")
+                    {
+                        var image = item.Value<MediaWithCrops>("articleImage");
+
+                        <a class="article-card" href="@item.Url()">
+                            <div class="article-card-decor">
+                                <div class="article-card-date">
+                                    <p class="m-0">@item.CreateDate.ToString("dd")</p>
+                                    <p class="m-0">@item.CreateDate.ToString("MMM")</p>
+                                </div>
+
+                            <img class="article-card-img object-fit-cover" src="@image.MediaUrl()" width="420px" height="220px">
+                            </div>
+                            <div class="article-card-info">
+                                <p class="text-s ">@item.Value("articleCategories")</p>
+                                <h5 class="title-s ">@item.Name</h5>
+                                <p class="text-teaser  mx-auto">@item.Value("articleTeaser")</p>
+                            </div>
+                        </a>
+                    }
+                    else
+                    {
+                        var image = item.Value<MediaWithCrops>("projectImage");
+
+                        <a class="article-card" href="@item.Url()">
+                            <div class="article-card-decor">
+                                <div class="article-card-date">
+                                    <p class="m-0">@item.CreateDate.ToString("dd")</p>
+                                    <p class="m-0">@item.CreateDate.ToString("MMM")</p>
+                                </div>
+
+                            <img class="article-card-img object-fit-cover" src="@image.MediaUrl()" width="420px" height="220px">
+                            </div>
+                            <div class="article-card-info">
+                                <p class="text-s ">Project</p>
+                                <h5 class="title-s ">@item.Name</h5>
+                            <p class="text-teaser  mx-auto">@item.Value("projectTeaser")</p>
+                            </div>
+                        </a>
+                    }
+
+                }
+
+            }
+        </div>
+
+        <nav aria-label="Page navigation pagination-container" class="mt-2">
+            <ul class="pagination d-flex justify-content-center">
+                @if (pageNumber > 1)
+                {
+                    <li class="pagination-btn"><a class="page-link pagination-btn" href="?page=@(pageNumber - 1)"><i class="fa-light fa-chevron-left"></i></a></li>
+                }
+
+                @if(totalItems > itemsPerPage)
+                {
+                    @for(int i = 1; i <= Math.Ceiling((decimal)totalItems/itemsPerPage); i++)
+                    {
+                        if(i == pageNumber)
+                        {
+                            <li class="pagination-btn"><a class="page-link pagination-btn active" href="#">@i</a></li>
+                        }
+                        else
+                        {
+                            <li class="pagination-btn"><a class="page-link pagination-btn" href="?page=@i">@i</a></li>
+                        }
+                    }
+                }
+
+                @if (pageNumber < Math.Ceiling((decimal)totalItems / itemsPerPage))
+                {
+                    <li class="pagination-btn"><a class="page-link pagination-btn" href="?page=@(pageNumber + 1)"><i class="fa-light fa-chevron-right"></i></a></li>
+                }
+            </ul>
+          </nav>
+    </section>
+
+@await Html.PartialAsync("_GetNewsForm")
+   
