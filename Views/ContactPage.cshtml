@@ -1,6 +1,64 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+﻿@using Crito.Models;
+@using Umbraco.Cms.Web.Common.PublishedModels;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.ContactPage>
 @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
 @{
-	Layout = "_LayoutWithBreadcrumb.cshtml";
+    Layout = "_LayoutWithBreadcrumb.cshtml";
+    var contactForm = new ContactForm();
 }
+
+    <!-- externa contacts -->
+    <section class="external-contact-information container">
+        <div class="external-contact-card">
+            <div class="external-contact-card-btn"><i class="fa-regular fa-location-dot"></i></div>
+            <div>
+                <h6 class="title-s">Visit Us</h6>
+                <p class="mb-0">@Model.Value("contactInformationStreet")</p>
+                <p class="mb-0">@Model.Value("contactInformationZipCode") @Model.Value("contactInformationCity")</p>
+            </div>
+        </div>
+        <div class="external-contact-card">
+            <div class="external-contact-card-btn"><i class="fa-regular fa-phone"></i></div>
+            <div>
+                <h6 class="title-s">Call Us</h6>
+                <p class="mb-0">@Model.Value("contactInformationPhoneNumber1")</p>
+                <p class="mb-0">@Model.Value("contactInformationPhoneNumber2")</p>
+            </div>
+        </div>
+        <div class="external-contact-card">
+            <div class="external-contact-card-btn"><i class="fa-regular fa-envelope"></i></div>
+            <div>
+                <h6 class="title-s">Email Us</h6>
+                <p class="mb-0">@Model.Value("contactInformationEmail1")</p>
+                <p class="mb-0">@Model.Value("contactInformationEmail2")</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leave Us Message -->
+    <section class="container bg-beige">
+        <div class="leave-message-container">
+            <h3 class="title-m leave-message-title">Leave us a message for any information.</h3>
+
+            <form class="leave-message" asp-controller="Contact" asp-action="Index" method="post" enctype="multipart/form-data" novalidate onsubmit="return validateOnSubmit()">
+                <div class="tag" asp-validation-summary="ModelOnly"></div>
+                
+                <div class="form-group">
+                    <input class="leave-message-field" asp-for="@contactForm.Name" type="text" placeholder="Name *" id="contactName" onkeyup="validateForm(event, 'nameError', 'name')" required>
+                </div>
+                <div class="form-group">
+                    <input class="leave-message-field" asp-for="@contactForm.Email" type="text" placeholder="Email *" id="contactEmail" onkeyup="validateForm(event, 'emailError', 'email')" required>
+                </div>
+                <div class="form-group">
+                    <textarea class="leave-message-field" asp-for="@contactForm.Message" cols="30" rows="10" placeholder="Your Message *" id="ContactMessage" onkeyup="validateForm(event, 'messageError', 'contactMessage')" required></textarea>
+                </div>
+
+                <button type="submit" class="btn orange-btn leave-message-field">Send Message<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></button>
+            </form>
+        </div>
+    </section>
+
+    <section class="map-container">
+        <iframe class="map" src="@Model.Value("googleMapsUrl")" 
+         loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </section>

@@ -1423,10 +1423,12 @@ header .toggle {
 }
 .leave-message-container .leave-message {
   padding-top: 20px;
+  width:70%;
 }
 .leave-message-container .leave-message .leave-message-field {
   width: 100%;
   border-radius: 20px;
+  border: 1px solid #F0EFE9;
   padding: 10px;
   margin: 10px auto;
   resize: none;
