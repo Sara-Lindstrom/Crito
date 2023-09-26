@@ -8,6 +8,7 @@ namespace Crito.Services
     {
 
         private string _from;
+        //vilken mailserver den ska skickas från
         private string _smtp;
         private int _port;
         private string _username;

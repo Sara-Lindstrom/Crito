@@ -1,4 +1,5 @@
 ﻿using Crito.Models;
+using Crito.Services;
 using Microsoft.AspNetCore.Mvc;
 using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Core.Logging;
@@ -12,7 +13,14 @@ namespace Crito.Controllers
 {
     public class ContactController : SurfaceController
     {
-        public ContactController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services, AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider) : base(umbracoContextAccessor, databaseFactory, services, appCaches, profilingLogger, publishedUrlProvider)
+        public ContactController(
+            IUmbracoContextAccessor umbracoContextAccessor,
+            IUmbracoDatabaseFactory databaseFactory,
+            ServiceContext services,
+            AppCaches appCaches,
+            IProfilingLogger profilingLogger,
+            IPublishedUrlProvider publishedUrlProvider)
+            : base(umbracoContextAccessor, databaseFactory, services, appCaches, profilingLogger, publishedUrlProvider)
         {
         }
 
@@ -24,7 +32,14 @@ namespace Crito.Controllers
                 return CurrentUmbracoPage();
             }
 
-            return RedirectToCurrentUmbracoPage();
+            using var mail = new MailService("no-reply@crito.com", "smtp.websupport.se", 465, "contactForm@crito.com", "BytMig123!");
+            //to sender
+            mail.SendAsync(contactForm.Email, "Your request has been received.", "Hi your request was received and we will be in contact as soon as posible.").ConfigureAwait(false);
+
+            //to us
+            mail.SendAsync("umbraco@crito.com", $"{contactForm.Name} sent an request.", contactForm.Message).ConfigureAwait(false);
+
+            return LocalRedirect(contactForm.RedirectURL ?? "/");
         }
     }
 }

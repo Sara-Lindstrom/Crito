@@ -197,10 +197,14 @@ a:hover {
   padding: 0;
 }
 
+.error-list ul{
+    list-style:none;
+}
+
 .frame {
-  border: 2px solid #F0EFE9;
-  padding: 40px;
-  margin-top: 40px;
+    border: 2px solid #F0EFE9;
+    padding: 40px;
+    margin-top: 40px;
 }
 
 .page-link:focus{
@@ -1423,7 +1427,7 @@ header .toggle {
 }
 .leave-message-container .leave-message {
   padding-top: 20px;
-  width:70%;
+  min-width:100%;
 }
 .leave-message-container .leave-message .leave-message-field {
   width: 100%;
