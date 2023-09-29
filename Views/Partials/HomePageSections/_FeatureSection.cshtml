@@ -1,14 +1,6 @@
 ﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
 @using Umbraco.Cms.Core.Models.Blocks;
 
-@*
-    @using Umbraco.Cms.Core.Models.PublishedContent;
-    @using Umbraco.Cms.Core.Models;
-    @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
-*@
-
-
-
     <section class="container features">
         <div class="features-info">
             <p class="tag">Features</p>
@@ -20,25 +12,25 @@
         {
             var featureCards = Model.Value<IEnumerable<BlockListItem>>("featureCardSection");
             if (featureCards is not null && featureCards.Any())
+            {
+                foreach (var card in featureCards)
                 {
-                    foreach (var card in featureCards)
-                    {
-                        string extractedText = "";
-                        string inputText = card.Content.Value<string>("featureCardIcon")!;
-                        string pattern = "\"(.*?)\"";
-                        System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(inputText, pattern);
+                    string extractedText = "";
+                    string inputText = card.Content.Value<string>("featureCardIcon")!;
+                    string pattern = "\"(.*?)\"";
+                    System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(inputText, pattern);
     
-                        if (match.Success)
-                        {
-                            extractedText = match.Groups[1].Value;
-                        }
-                        
-                        <div class="service-info-cards">
-                            <i class="@extractedText service-card-icon"></i>
-                            <h5 class="service-card-title">@card.Content.Value("featureCardTitle")</h5>
-                            <p class="service-card-info">@card.Content.Value("featureCardTeaser")</p>
-                        </div>
+                    if (match.Success)
+                    {
+                        extractedText = match.Groups[1].Value;
                     }
+                        
+                    <div class="service-info-cards">
+                        <i class="@extractedText service-card-icon"></i>
+                        <h5 class="service-card-title">@card.Content.Value("featureCardTitle")</h5>
+                        <p class="service-card-info">@card.Content.Value("featureCardTeaser")</p>
+                    </div>
+                }
             }        
         }
     </section>

@@ -2,38 +2,21 @@
 @using Umbraco.Cms.Web.Common.PublishedModels;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.ContactPage>
 @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+<script src="~/js/FormValidation.js"></script>
+
 @{
     Layout = "_LayoutWithBreadcrumb.cshtml";
     var contactForm = new ContactForm();
+
+    var formAttributes = new Dictionary<string, object>
+    {
+        { "class", "leave-message" },
+        { "novalidate", null }, 
+        { "onsubmit", "return validateOnSubmit()" }
+    };
 }
 
-    <!-- externa contacts -->
-    <section class="external-contact-information container">
-        <div class="external-contact-card">
-            <div class="external-contact-card-btn"><i class="fa-regular fa-location-dot"></i></div>
-            <div>
-                <h6 class="title-s">Visit Us</h6>
-                <p class="mb-0">@Model.Value("contactInformationStreet")</p>
-                <p class="mb-0">@Model.Value("contactInformationZipCode") @Model.Value("contactInformationCity")</p>
-            </div>
-        </div>
-        <div class="external-contact-card">
-            <div class="external-contact-card-btn"><i class="fa-regular fa-phone"></i></div>
-            <div>
-                <h6 class="title-s">Call Us</h6>
-                <p class="mb-0">@Model.Value("contactInformationPhoneNumber1")</p>
-                <p class="mb-0">@Model.Value("contactInformationPhoneNumber2")</p>
-            </div>
-        </div>
-        <div class="external-contact-card">
-            <div class="external-contact-card-btn"><i class="fa-regular fa-envelope"></i></div>
-            <div>
-                <h6 class="title-s">Email Us</h6>
-                <p class="mb-0">@Model.Value("contactInformationEmail1")</p>
-                <p class="mb-0">@Model.Value("contactInformationEmail2")</p>
-            </div>
-        </div>
-    </section>
+@await Html.PartialAsync("ContactPageSections/ContactUsSection")
 
     <!-- Leave Us Message -->
     <section class="container bg-beige">
@@ -41,26 +24,28 @@
             <h3 class="title-m leave-message-title">Leave us a message for any information.</h3>
 
 
-            @using (Html.BeginUmbracoForm("Index", "Contact", FormMethod.Post, new { @class = "leave-message" }))
-            {
+        @using (Html.BeginUmbracoForm("ContactForm", "Contact", FormMethod.Post, formAttributes))
+        {
                 <div class="tag error-list" asp-validation-summary="All"></div>
 
                 <div class="form-group">
-                    <input class="leave-message-field" asp-for="@contactForm.Name" type="text" placeholder="Name *" />
+                    <input class="leave-message-field" asp-for="@contactForm.Name" type="text" placeholder="Name *" id="contactName" onkeyup="validateForm(event, 'contactNameError', 'contactName')" required>
+                    <span asp-validation-for="@contactForm.Name" id="contactNameError" class="error"></span>
                 </div>
                 <div class="form-group">
-                    <input class="leave-message-field" asp-for="@contactForm.Email" type="text" placeholder="Email *" />
+                    <input class="leave-message-field" asp-for="@contactForm.Email" type="text" placeholder="Email *" id="contactEmail" onkeyup="validateForm(event, 'contactEmailError', 'contactEmail')" required>
+                    <span asp-validation-for="@contactForm.Email" id="contactEmailError" class="error"></span>
                 </div>
                 <div class="form-group">
-                    <textarea class="leave-message-field" asp-for="@contactForm.Message" cols="30" rows="10" placeholder="Your Message *"></textarea>
+                    <textarea class="leave-message-field" asp-for="@contactForm.Message" cols="30" rows="10" placeholder="Your Message *" id="contactMessage" onkeyup="validateForm(event, 'contactMessageError', 'contactMessage')" required></textarea>
+                    <span asp-validation-for="@contactForm.Message" id="contactMessageError" class="error"></span>
                 </div>
+                <input type="hidden" class="currentUrl" name="currentUrl" value="">
+
 
                 <button type="submit" class="btn orange-btn leave-message-field">Send Message<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></button>
             }
         </div>
     </section>
 
-    <section class="map-container">
-        <iframe class="map" src="@Model.Value("googleMapsUrl")" 
-         loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </section>
+@await Html.PartialAsync("ContactPageSections/MapSection")

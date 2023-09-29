@@ -1,6 +1,7 @@
 ﻿using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
+using System.Diagnostics;
 
 namespace Crito.Services
 {
@@ -43,7 +44,10 @@ namespace Crito.Services
                 var result = await _client.SendAsync(email);
             }
 
-            catch { }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
         }
 
         public void Dispose()

@@ -1,0 +1,29 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+
+    <!-- externa contacts -->
+    <section class="external-contact-information container">
+        <div class="external-contact-card">
+            <div class="external-contact-card-btn"><i class="fa-regular fa-location-dot"></i></div>
+            <div>
+                <h6 class="title-s">Visit Us</h6>
+                <p class="mb-0">@Model.Value("contactInformationStreet")</p>
+                <p class="mb-0">@Model.Value("contactInformationZipCode") @Model.Value("contactInformationCity")</p>
+            </div>
+        </div>
+        <div class="external-contact-card">
+            <div class="external-contact-card-btn"><i class="fa-regular fa-phone"></i></div>
+            <div>
+                <h6 class="title-s">Call Us</h6>
+                <p class="mb-0">@Model.Value("contactInformationPhoneNumber1")</p>
+                <p class="mb-0">@Model.Value("contactInformationPhoneNumber2")</p>
+            </div>
+        </div>
+        <div class="external-contact-card">
+            <div class="external-contact-card-btn"><i class="fa-regular fa-envelope"></i></div>
+            <div>
+                <h6 class="title-s">Email Us</h6>
+                <p class="mb-0">@Model.Value("contactInformationEmail1")</p>
+                <p class="mb-0">@Model.Value("contactInformationEmail2")</p>
+            </div>
+        </div>
+    </section>

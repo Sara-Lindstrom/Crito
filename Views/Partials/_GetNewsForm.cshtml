@@ -1,13 +1,36 @@
 ﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using Crito.Models;
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+<script src="~/js/FormValidation.js"></script>
+
+@{
+    var getNewsForm = new GetNewsForm();
+
+    var formAttributes = new Dictionary<string, object>
+    {
+        { "class", "get-news-form" },
+        { "novalidate", null }, 
+        { "onsubmit", "return validateOnSubmit()" }
+    };
+}
 
     <section class="position-relative bg-beige">
         <div class="get-news-form-container container">
             <h5 class="title-m get-news-title">Get News Updates By Signup</h5>
 
-            <form class="get-news-form">
-                <input class="get-news-email" placeholder="username@domain.com">
-                <button type="submit" class="btn orange-btn">Subscribe<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></button>
-            </form>
+        @using (Html.BeginUmbracoForm("GetNewsForm", "Contact", FormMethod.Post, formAttributes))
+        {
+            <div>
+                <input class="get-news-email" asp-for="@getNewsForm.Email" type="text" placeholder="username@domain.com" id="contactEmail" onkeyup="validateForm(event, 'contactEmailError', 'contactEmail')" required>
+                <input type="hidden" class="currentUrl" name="currentUrl" value="" >
+            </div>
+
+            <button type="submit" class="btn orange-btn">Subscribe<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></button>
+        }
+        <span asp-validation-for="@getNewsForm.Email" id="contactEmailError" class="error tag get-news-error"></span>
+
         </div>
         <img class="bg-decor-bottomright" src="~/images/Background-effects/SignupSwosh.svg">
     </section>
+
