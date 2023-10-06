@@ -1,6 +1,7 @@
 function validateOnSubmit() {
     var currentUrlField = document.getElementsByClassName("currentUrl");
-    var spanTags = document.getElementsByClassName("error");
+    const requiredFields = document.querySelectorAll('[required]');
+
     var isEmpty = true;
 
     if (currentUrlField) {
@@ -8,6 +9,24 @@ function validateOnSubmit() {
             currentUrlField[i].value = window.location.href;
         }        
     }
+
+    for (var i = 0; i < requiredFields.length; i++) {
+
+        if (requiredFields[i].value.trim() === '') {
+            var aspForValue = requiredFields[i].getAttribute("data-asp-for");
+            var validationSpan = document.querySelector('span[data-asp-validation-for="' + aspForValue + '"]');
+
+            console.log("asp" + aspForValue);
+
+            validationSpan.innerText = `This field is required ${aspForValue}`;
+
+            console.log("2");
+
+        }
+
+    }
+
+    var spanTags = document.getElementsByClassName("error");
 
     for (var i = 0; i < spanTags.length; i++) {
 

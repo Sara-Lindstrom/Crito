@@ -1,6 +1,7 @@
 ﻿using Crito.Contexts;
 using Crito.Models;
 using Crito.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Crito.Services;
 
@@ -15,7 +16,12 @@ public class NewsLetterSubscriberService
 
     public async Task AddNewsSubscriberAsync(GetNewsForm form)
     {
-        _context.NewsLetterSubscribers.Add(new GetNewsEntity { Email = form.Email });
-        await _context.SaveChangesAsync();
+        var _subscriber = await _context.NewsLetterSubscribers.FirstOrDefaultAsync(x => x.Email == form.Email);
+
+        if (_subscriber is null)
+        {
+            _context.NewsLetterSubscribers.Add(new GetNewsEntity { Email = form.Email });
+            await _context.SaveChangesAsync();
+        }
     }
 }

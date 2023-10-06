@@ -22,13 +22,13 @@
         @using (Html.BeginUmbracoForm("GetNewsForm", "Contact", FormMethod.Post, formAttributes))
         {
             <div>
-                <input class="get-news-email" asp-for="@getNewsForm.Email" type="text" placeholder="username@domain.com" id="contactEmail" onkeyup="validateForm(event, 'contactEmailError', 'contactEmail')" required>
+                <input class="get-news-email" asp-for="@getNewsForm.Email" data-asp-for="getNewsForm.Email" type="text" placeholder="username@domain.com" id="contactEmail" onkeyup="validateForm(event, 'contactEmailError', 'contactEmail')" required>
                 <input type="hidden" class="currentUrl" name="currentUrl" value="" >
             </div>
 
             <button type="submit" class="btn orange-btn">Subscribe<span class="mx-1"></span><i class="fa-light fa-arrow-up-right align-self-center"></i></button>
         }
-        <span asp-validation-for="@getNewsForm.Email" id="contactEmailError" class="error tag get-news-error"></span>
+        <span asp-validation-for="@getNewsForm.Email" data-asp-validation-for="getNewsForm.Email" id="contactEmailError" class="error tag get-news-error"></span>
 
         </div>
         <img class="bg-decor-bottomright" src="~/images/Background-effects/SignupSwosh.svg">

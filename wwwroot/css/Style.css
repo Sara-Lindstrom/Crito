@@ -528,6 +528,7 @@ header .toggle {
 .service-info-cards {
   text-align: center;
   padding: 10px;
+  background-color: white;
   z-index:100;
 }
 @media (min-width: 768px) {

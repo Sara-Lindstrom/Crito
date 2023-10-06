@@ -42,11 +42,11 @@ namespace Crito.Controllers
                 return CurrentUmbracoPage();
             }
 
-            using var mail = new MailService("no-reply@crito.com", "smtp.crito.com", 587, "contactForm@crito.com", "BytMig123!");
-            //to sender
-            mail.SendAsync(contactForm.Email, "Your request has been received.", "Hi your request was received and we will be in contact as soon as posible.").ConfigureAwait(false);
-            //to us
-            mail.SendAsync("umbraco@crito.com", $"{contactForm.Name} sent an request.", contactForm.Message).ConfigureAwait(false);
+            //using var mail = new MailService("no-reply@crito.com", "smtp.crito.com", 587, "contactForm@crito.com", "BytMig123!");
+            ////to sender
+            //await mail.SendAsync(contactForm.Email, "Your request has been received.", "Hi your request was received and we will be in contact as soon as posible.");
+            ////to us
+            //await mail.SendAsync("umbraco@crito.com", $"{contactForm.Name} sent an request.", contactForm.Message);
 
 
             await _contactRequestService.AddNewContactRequest(contactForm);
